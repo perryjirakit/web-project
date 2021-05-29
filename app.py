@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from flask import Flask, render_template, request, redirect
 from flask.helpers import url_for
 from flask_login.mixins import UserMixin
@@ -60,7 +61,7 @@ class Trips(db.Model):
 
     def __init__(self, customer, date, location, distance, comment, user_id):
         self.customer = customer
-        #self.date = date
+        self.date = date
         self.location = location
         self.distance = distance
         self.comment = comment
@@ -122,11 +123,13 @@ def logout():
 def addtrips():
     if request.method == "POST":
         customer = request.form.get("customer")
-        date = request.form.get("date")
+        date_string = request.form.get("date")
         location = request.form.get("location")
         distance = request.form.get("distance")
         comment = request.form.get("comment")
         user_id = current_user.id
+        
+        date = datetime.fromisoformat(date_string)
 
         trips = Trips(customer=customer, date=date,
                       location=location, distance=distance, comment=comment, user_id=user_id)
