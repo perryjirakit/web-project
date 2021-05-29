@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content%}
+<form action="{{url_for('addtrips')}}" method="POST">
+    <div class="mb-3">
+        <label for="customer" class="form-label">Customer</label>
+        <input type="text" class="form-control" id="customer" name="customer">
+    </div>
+    <div class="mb-3">
+        <label for="date" class="form-label">Date</label>
+        <input type="datetime-local" class="form-control" id="date" name="date">
+    </div>
+    <div class="mb-3">
+        <label for="location" class="form-label">Location</label>
+        <input type="text" class="form-control" id="location" name="location">
+    </div>
+    <div class="mb-3">
+        <label for="distance" class="form-label">Distance</label>
+        <input type="text" class="form-control" id="distance" name="distance">
+    </div>
+    <div class="mb-3">
+        <label for="comment" class="form-label">Comment</label>
+        <input type="text" class="form-control" id="comment" name="comment">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}

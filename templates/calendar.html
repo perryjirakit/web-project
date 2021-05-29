@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content%}
+<h1>Calendar</h1>
+{% for trip in trips%}
+{{trip.customer}}
+{{trip.date}}
+{{trip.location}}
+{{trip.distance}}
+{{trip.comment}}
+{{trip.user.firstname}}
+{% endfor %}
+{% endblock %}
