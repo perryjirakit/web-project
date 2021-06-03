@@ -99,11 +99,12 @@ def register():
     if request.method == "POST":
         firstname = request.form.get("firstname")
         lastname = request.form.get("lastname")
+        gmail = request.form.get("gmail")
         username = request.form.get("username")
         password = request.form.get("password")
         confirm_password = request.form.get("confirm-password")
         user = User(firstname=firstname, lastname=lastname,
-                    username=username, password=password)
+                    gmail=gmail, username=username, password=password)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for("login"))
@@ -128,7 +129,7 @@ def addtrips():
         distance = request.form.get("distance")
         comment = request.form.get("comment")
         user_id = current_user.id
-        
+
         date = datetime.fromisoformat(date_string)
 
         trips = Trips(customer=customer, date=date,
