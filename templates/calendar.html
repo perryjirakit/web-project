@@ -11,7 +11,7 @@
 {% endfor %}
 
 <table class="table">
-    <thead>
+    <thead class="table-light">
         <tr>
             <th scope="col">ID</th>
             <th scope="col">Firstname</th>
@@ -43,10 +43,13 @@
     </tbody>
 </table>
 
+
+
+
 <table class="table">
-    <thead>
+    <thead class="table-light">
         <tr>
-            <th scope="col">ID</th>
+            <th scope="col">Customer</th>
             <th scope="col">Date</th>
             <th scope="col">Location</th>
             <th scope="col">Distance</th>
@@ -72,6 +75,61 @@
             <td colspan="2">Larry the Bird</td>
             <td>@twitter</td>
         </tr>
+    </tbody>
+</table>
+
+
+
+<table class="table">
+    <thead class="table-light">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Firstname</th>
+            <th scope="col">Lastname</th>
+            <th scope="col">Gmail</th>
+            <th scope="col">Username</th>
+            <th scope="col">Password</th>
+            <th scope="col">Trip_IDs</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <th scope="row">1</th>
+            <td>{{user.firstname}}</td>
+            <td>{{user.lastname}}</td>
+            <td>{{user.username}}</td>
+            <td>{{user.password}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+
+<table class="table">
+    <thead class="table-light">
+        <tr>
+            <th scope="col">Customer</th>
+            <th scope="col">Date</th>
+            <th scope="col">Location</th>
+            <th scope="col">Distance</th>
+            <th scope="col">Comment</th>
+            <th scope="col">User_IDs</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for trip in trips %}
+        <tr>
+            <th scope="row">{{trip.customer}}</th>
+            <td>{{trip.date}}</td>
+            <td>{{trip.location}}</td>
+            <td>{{trip.distance}}</td>
+            <td>{{trip.comment}}</td>
+            <td>{{trip.user.firstname}}</td>
+        </tr>
+        {% endfor %}
     </tbody>
 </table>
 {% endblock %}
