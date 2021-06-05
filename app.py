@@ -77,7 +77,8 @@ def index():
 @login_required
 def calendar():
     trips = Trips.query.all()
-    return render_template("calendar.html", trips=trips)
+    users = User.query.all()
+    return render_template("calendar.html", trips=trips, users=users)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -138,3 +139,17 @@ def addtrips():
         db.session.commit()
         return redirect(url_for("calendar"))
     return render_template("addtrips.html")
+
+
+@app.route("/usersdata")
+@login_required
+def usersdata():
+    users = User.query.all()
+    return render_template("usersdata.html", users=users)
+
+
+@app.route("/tripsdata")
+@login_required
+def tripsdata():
+    trips = Trips.query.all()
+    return render_template("tripsdata.html", trips=trips)

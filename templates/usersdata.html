@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content%}
+<h1>Users Data</h1>
+<table class="table">
+    <thead class="table-light">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Firstname</th>
+            <th scope="col">Lastname</th>
+            <th scope="col">Gmail</th>
+            <th scope="col">Username</th>
+            <th scope="col">Password</th>
+            <th scope="col">Trip_IDs</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <th scope="row">1</th>
+            <td>{{user.firstname}}</td>
+            <td>{{user.lastname}}</td>
+            <td>{{user.username}}</td>
+            <td>{{user.password}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
