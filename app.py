@@ -104,12 +104,15 @@ def register():
         username = request.form.get("username")
         password = request.form.get("password")
         confirm_password = request.form.get("confirm-password")
+
+        # TODO: check whether password == confirm_password
+
         user = User(firstname=firstname, lastname=lastname,
                     gmail=gmail, username=username, password=password)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for("login"))
-        print("Username : " + username + " Password : " + password)
+
     return render_template("register.html")
 
 
