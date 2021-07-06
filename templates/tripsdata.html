@@ -10,6 +10,7 @@
             <th scope="col">Distance</th>
             <th scope="col">Comment</th>
             <th scope="col">User_IDs</th>
+            <th scope="col">Edit</th>
         </tr>
     </thead>
     <tbody>
@@ -21,6 +22,9 @@
             <td>{{trip.distance}}</td>
             <td>{{trip.comment}}</td>
             <td>{{trip.user.firstname}}</td>
+            <td>
+                <button type="submit" class="btn btn-primary">Edit</button>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content%}
+<h1>View Trips</h1>
+
+<form action="{{url_for('viewtrips')}}" method="POST">
+
+    <h3>Start</h3>
+    <div class="mb-3">
+        <label for="latitude" class="form-label">Latitude</label>
+        <input type="text" class="form-control" id="latitude" name="latitude">
+    </div>
+
+    <div class="mb-3">
+        <label for="longitude" class="form-label">Longitude</label>
+        <input type="text" class="form-control" id="longitude" name="longitude">
+    </div>
+    <button type="submit" class="btn btn-primary">Current Location</button>
+    <h3>Finish</h3>
+
+    <div class="mb-3">
+        <label for="latitude" class="form-label">Latitude</label>
+        <input type="text" class="form-control" id="latitude" name="latitude">
+    </div>
+
+    <div class="mb-3">
+        <label for="longitude" class="form-label">Longitude</label>
+        <input type="text" class="form-control" id="longitude" name="longitude">
+    </div>
+    <button type="submit" class="btn btn-primary">Current Location</button>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}

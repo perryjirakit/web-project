@@ -36,8 +36,15 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="{{url_for('login')}}">Log in</a>
                     </li>
+                    {% endif %}
+                    {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{url_for('register')}}">Register</a>
+                        <a class="nav-link active" href="{{url_for('addtrips')}}">Add Trips</a>
+                    </li>
+                    {% endif %}
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{url_for('usersdata')}}">Users</a>
                     </li>
                     {% endif %}
                     {% if current_user.is_authenticated %}

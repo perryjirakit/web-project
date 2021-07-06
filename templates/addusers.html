@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content%}
+<div class="container">
+    <h1>Add User</h1>
+
+    <form action="{{url_for('addusers')}}" method="POST">
+        <div class="mb-3">
+            <label for="firstname" class="form-label">Firstname</label>
+            <input type="text" class="form-control" id="firstname" name="firstname">
+        </div>
+        <div class="mb-3">
+            <label for="lastname" class="form-label">Lastname</label>
+            <input type="text" class="form-control" id="lastname" name="lastname">
+        </div>
+        <div class="mb-3">
+            <label for="gmail" class="form-label">Gmail</label>
+            <input type="text" class="form-control" id="gmail" name="gmail">
+        </div>
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username">
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password">
+        </div>
+        <div class="mb-3">
+            <label for="confirm-password" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="confirm-password" name="confirm-password">
+        </div>
+        <div class="mb-3">
+            <label for="is-admin" class="form-label">Admin</label>
+            <input type="checkbox" id="is-admin" name="is-admin">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock %}
