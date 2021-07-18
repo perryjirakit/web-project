@@ -1,3 +1,4 @@
+from math import sin, cos, sqrt, atan2, radians
 import os
 from datetime import datetime
 from flask import Flask, render_template, request, redirect
@@ -9,16 +10,21 @@ from flask_migrate import Migrate
 from werkzeug import datastructures
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, current_user
+import requests
 
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'secret'
 
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 # SQL Database Section
-basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
-    os.path.join(basedir, 'data.sqlite')
+# basedir = os.path.abspath(os.path.dirname(__file__))
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
+#     os.path.join(basedir, 'data.sqlite')
+uri = os.getenv("DATABASE_URL")  # or other relevant config var
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -27,6 +33,24 @@ Migrate(app, db)
 login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)
+
+
+def getDistanceFromGoogle(start_latitude, start_longitude, finish_latitude, finish_longitude):
+    # return None if start and finish positions are None
+    if start_latitude is None:
+        return None
+    if start_longitude is None:
+        return None
+    if finish_latitude is None:
+        return None
+    if finish_longitude is None:
+        return None
+
+    response = requests.get(
+        f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={start_latitude},{start_longitude}&destinations={finish_latitude},{finish_longitude}&key={GOOGLE_API_KEY}")
+    distance = response.json()["rows"][0]["elements"][0]["distance"]["value"]
+
+    return distance
 
 
 @login_manager.user_loader
@@ -62,17 +86,55 @@ class Trips(db.Model):
     date = db.Column(db.DateTime(timezone=True))
     location = db.Column(db.Text)
     distance = db.Column(db.Numeric)
-    comment = db.Column(db.Text)
+    report = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
     user = db.relationship("User", backref="Trips")
 
-    def __init__(self, customer, date, location, distance, comment, user_id):
+    # start location
+    # latitute, logitude
+    start_latitude = db.Column(db.Numeric)
+    start_longitude = db.Column(db.Numeric)
+
+    # finish location
+    # latitute, logitude
+    finish_latitude = db.Column(db.Numeric)
+    finish_longitude = db.Column(db.Numeric)
+
+    def __init__(self, customer, date, location, distance, report, user_id):
         self.customer = customer
         self.date = date
         self.location = location
         self.distance = distance
-        self.comment = comment
+        self.report = report
         self.user_id = user_id
+
+    def distanceBetweenTwoPoints(self):
+        # return None if start and finish positions are None
+        if self.start_latitude is None:
+            return None
+        if self.start_longitude is None:
+            return None
+        if self.finish_latitude is None:
+            return None
+        if self.finish_longitude is None:
+            return None
+
+        # approximate radius of earth in km
+        R = 6373.0
+
+        lat1 = radians(self.start_latitude)
+        lon1 = radians(self.start_longitude)
+        lat2 = radians(self.finish_latitude)
+        lon2 = radians(self.finish_longitude)
+
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+
+        a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+        c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+        distance = R * c
+        return distance
 
 
 @app.route("/")
@@ -83,9 +145,22 @@ def index():
 @app.route("/home")
 @login_required
 def calendar():
-    trips = Trips.query.all()
-    users = User.query.all()
-    return render_template("calendar.html", trips=trips, users=users)
+    trips = []
+    # if user is admin, show all trips
+    if current_user.is_admin:
+        trips = Trips.query.all()
+        # in each trip distance = trip.distanceBetweenTwoPoints()
+        # loop each trip in trips to sum all distance
+        # total distance
+        # total_distance = 0
+        # for trip in trips:
+        #     total_distance += trip.distanceBetweenTwoPoints()
+        # pricePerDistance = 50
+        # price = total_distance * pricePerDistance
+    else:
+        # else, show user's trips
+        trips = Trips.query.filter_by(user_id=current_user.id)
+    return render_template("calendar.html", trips=trips)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -117,10 +192,14 @@ def register():
         username = request.form.get("username")
         password = request.form.get("password")
         confirm_password = request.form.get("confirm-password")
+
+        # TODO: check whether password == confirm_password
+
         user = User(firstname=firstname, lastname=lastname,
                     gmail=gmail, username=username, password=password, is_admin=True)
         db.session.add(user)
         db.session.commit()
+
         return redirect(url_for("login"))
 
     return render_template("register.html")
@@ -141,13 +220,13 @@ def addtrips():
         date_string = request.form.get("date")
         location = request.form.get("location")
         distance = request.form.get("distance")
-        comment = request.form.get("comment")
+        report = request.form.get("report")
         user_id = current_user.id
 
         date = datetime.fromisoformat(date_string)
 
         trips = Trips(customer=customer, date=date,
-                      location=location, distance=distance, comment=comment, user_id=user_id)
+                      location=location, distance=distance, report=report, user_id=user_id)
         db.session.add(trips)
         db.session.commit()
         return redirect(url_for("calendar"))
@@ -162,6 +241,24 @@ def usersdata():
         return redirect(url_for("index"))
     users = User.query.all()
     return render_template("usersdata.html", users=users)
+
+# delete function
+
+
+@app.route("/delete-user/<int:id>")
+@login_required
+def deleteUser(id):
+    User.query.filter_by(id=id).delete()
+    db.session.commit()
+    return redirect(url_for("usersdata"))
+
+
+@app.route("/delete-trips/<int:id>")
+@login_required
+def deleteTrips(id):
+    Trips.query.filter_by(id=id).delete()
+    db.session.commit()
+    return redirect(url_for("calendar"))
 
 
 @app.route("/usersdata/add", methods=["GET", "POST"])
@@ -188,17 +285,38 @@ def addusers():
     return render_template("addusers.html")
 
 
-@app.route("/tripsdata")
-@login_required
-def tripsdata():
-    trips = Trips.query.all()
-    return render_template("tripsdata.html", trips=trips)
+# /viewtrips/:tripid
+# /viewtrips/1
 
 
-@app.route("/viewtrips")
+@app.route("/viewtrips/<int:id>", methods=["GET", "POST"])
 @login_required
-def viewtrips():
-    return render_template("viewtrips.html")
+def viewtrips(id):
+    trip = Trips.query.get(id)
+
+    # check if method is POST
+    if request.method == "POST":
+        start_latitude = request.form.get("start-latitude")
+        start_longitude = request.form.get("start-longitude")
+        finish_latitude = request.form.get("finish-latitude")
+        finish_longitude = request.form.get("finish-longitude")
+        report = request.form.get("report")
+
+        # if has both start and finish location
+        distance = getDistanceFromGoogle(
+            start_latitude, start_longitude, finish_latitude, finish_longitude)
+
+        trip.start_latitude = start_latitude
+        trip.start_longitude = start_longitude
+        trip.finish_latitude = finish_latitude
+        trip.finish_longitude = finish_longitude
+        trip.distance = distance
+        trip.report = report
+        db.session.add(trip)
+        db.session.commit()
+
+        return redirect(url_for("calendar"))
+    return render_template("viewtrips.html", trip=trip)
 
 
 @app.route("/admin")

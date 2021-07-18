@@ -10,6 +10,7 @@
             <th scope="col">Lastname</th>
             <th scope="col">Gmail</th>
             <th scope="col">Username</th>
+            <th scope="col">Delete</th>
         </tr>
     </thead>
     <tbody>
@@ -20,6 +21,9 @@
             <td>{{user.lastname}}</td>
             <td>{{user.gmail}}</td>
             <td>{{user.username}}</td>
+            <td>
+                <a class="btn btn-danger" href="{{ url_for('deleteUser', id=user.id) }}">Delete User</a>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

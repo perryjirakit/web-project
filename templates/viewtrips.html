@@ -2,32 +2,76 @@
 {% block content%}
 <h1>View Trips</h1>
 
-<form action="{{url_for('viewtrips')}}" method="POST">
-
+<form action="{{ url_for('viewtrips', id=trip.id) }}" method="POST">
     <h3>Start</h3>
     <div class="mb-3">
-        <label for="latitude" class="form-label">Latitude</label>
-        <input type="text" class="form-control" id="latitude" name="latitude">
+        <label for="start-latitude" class="form-label">Latitude</label>
+        <input type="text" class="form-control" id="start-latitude" name="start-latitude"
+            value="{{ trip.start_latitude }}">
     </div>
-
     <div class="mb-3">
-        <label for="longitude" class="form-label">Longitude</label>
-        <input type="text" class="form-control" id="longitude" name="longitude">
+        <label for="start-longitude" class="form-label">Longitude</label>
+        <input type="text" class="form-control" id="start-longitude" name="start-longitude"
+            value="{{ trip.start_longitude }}">
     </div>
-    <button type="submit" class="btn btn-primary">Current Location</button>
+    <button type="button" class="btn btn-primary" onclick="getStartLocation()">Current Location</button>
+    <div id="start-location"></div>
+
     <h3>Finish</h3>
+    <div class="mb-3">
+        <label for="finish-latitude" class="form-label">Latitude</label>
+        <input type="text" class="form-control" id="finish-latitude" name="finish-latitude"
+            value="{{ trip.finish_latitude }}">
+    </div>
+    <div class="mb-3">
+        <label for="finish-longitude" class="form-label">Longitude</label>
+        <input type="text" class="form-control" id="finish-longitude" name="finish-longitude"
+            value="{{ trip.finish_longitude }}">
+    </div>
+    <button type="button" class="btn btn-primary" onclick="getFinishLocation()">Current Location</button>
+    <div id="finish-location"></div>
 
     <div class="mb-3">
-        <label for="latitude" class="form-label">Latitude</label>
-        <input type="text" class="form-control" id="latitude" name="latitude">
+        <label for="report" class="form-label">Report</label>
+        <input type="text" class="form-control" id="report" name="report">
     </div>
-
-    <div class="mb-3">
-        <label for="longitude" class="form-label">Longitude</label>
-        <input type="text" class="form-control" id="longitude" name="longitude">
-    </div>
-    <button type="submit" class="btn btn-primary">Current Location</button>
 
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+
+<script>
+    var startLocationDiv = document.getElementById('start-location')
+    var startLatitudeField = document.getElementById('start-latitude')
+    var startLongitudeField = document.getElementById('start-longitude')
+
+    var finishLocationDiv = document.getElementById('finish-location')
+    var finishLatitudeField = document.getElementById('finish-latitude')
+    var finishLongitudeField = document.getElementById('finish-longitude')
+
+    function getStartLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showStartPosition)
+        } else {
+            locationDiv.innerHTML = 'Geolocation is not supported by this browser.'
+        }
+    }
+
+    function getFinishLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showFinishPosition)
+        } else {
+            locationDiv.innerHTML = 'Geolocation is not supported by this browser.'
+        }
+    }
+
+    function showStartPosition(position) {
+        startLatitudeField.value = position.coords.latitude
+        startLongitudeField.value = position.coords.longitude
+    }
+
+    function showFinishPosition(position) {
+        finishLatitudeField.value = position.coords.latitude
+        finishLongitudeField.value = position.coords.longitude
+    }
+</script>
 {% endblock %}
