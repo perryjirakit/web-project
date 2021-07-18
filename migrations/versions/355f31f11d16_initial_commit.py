@@ -1,8 +1,8 @@
-"""initial
+"""initial commit
 
-Revision ID: 315d418193c0
+Revision ID: 355f31f11d16
 Revises: 
-Create Date: 2021-07-03 13:24:48.276758
+Create Date: 2021-07-18 14:55:52.030674
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '315d418193c0'
+revision = '355f31f11d16'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,6 +25,7 @@ def upgrade():
     sa.Column('username', sa.Text(), nullable=True),
     sa.Column('password', sa.Text(), nullable=True),
     sa.Column('is_admin', sa.Boolean(), nullable=True),
+    sa.Column('gmail', sa.Text(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('username')
     )
@@ -34,8 +35,12 @@ def upgrade():
     sa.Column('date', sa.DateTime(timezone=True), nullable=True),
     sa.Column('location', sa.Text(), nullable=True),
     sa.Column('distance', sa.Numeric(), nullable=True),
-    sa.Column('comment', sa.Text(), nullable=True),
+    sa.Column('report', sa.Text(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('start_latitude', sa.Numeric(), nullable=True),
+    sa.Column('start_longitude', sa.Numeric(), nullable=True),
+    sa.Column('finish_latitude', sa.Numeric(), nullable=True),
+    sa.Column('finish_longitude', sa.Numeric(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['Users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

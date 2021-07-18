@@ -11,6 +11,9 @@ from werkzeug import datastructures
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, current_user
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()  # take environment variables from .env.
 
 
 app = Flask(__name__)
