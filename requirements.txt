@@ -22,3 +22,4 @@ zipp==3.4.1
 
 gunicorn
 psycopg2-binary==2.9.1
+requests
