@@ -2,7 +2,15 @@
 {% block content%}
 <div class="container">
     <h1>Add User</h1>
-
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+        <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
     <form action="{{url_for('addusers')}}" method="POST">
         <div class="mb-3">
             <label for="firstname" class="form-label">Firstname</label>

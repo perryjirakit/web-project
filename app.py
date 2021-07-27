@@ -2,7 +2,7 @@ from math import sin, cos, sqrt, atan2, radians
 import os
 from datetime import datetime
 from flask import Flask, render_template, request, redirect
-from flask.helpers import url_for
+from flask.helpers import flash, url_for
 from flask_login.mixins import UserMixin
 from flask_login.utils import login_required, logout_user
 from flask_sqlalchemy import SQLAlchemy
@@ -22,12 +22,12 @@ app.config['SECRET_KEY'] = 'secret'
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 # SQL Database Section
-# basedir = os.path.abspath(os.path.dirname(__file__))
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
-#     os.path.join(basedir, 'data.sqlite')
-uri = os.getenv("DATABASE_URL")  # or other relevant config var
-if uri.startswith("postgres://"):
-    uri = uri.replace("postgres://", "postgresql://", 1)
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
+    os.path.join(basedir, 'data.sqlite')
+# uri = os.getenv("DATABASE_URL")  # or other relevant config var
+# if uri.startswith("postgres://"):
+#   uri = uri.replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -89,7 +89,7 @@ class Trips(db.Model):
     date = db.Column(db.DateTime(timezone=True))
     location = db.Column(db.Text)
     distance = db.Column(db.Numeric)
-    report = db.Column(db.Text)
+    report = db.Column(db.Boolean)
     user_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
     user = db.relationship("User", backref="Trips")
 
@@ -103,7 +103,7 @@ class Trips(db.Model):
     finish_latitude = db.Column(db.Numeric)
     finish_longitude = db.Column(db.Numeric)
 
-    def __init__(self, customer, date, location, distance, report, user_id):
+    def __init__(self, customer, date, location, distance, user_id, report=False):
         self.customer = customer
         self.date = date
         self.location = location
@@ -174,6 +174,7 @@ def login():
         password = request.form.get("password")
         user = User.query.filter_by(username=username).first()
         if not user or not check_password_hash(user.password, password):
+            flash("Incorrect credential")
             return redirect(url_for("login"))
         login_user(user)
         return redirect(url_for("calendar"))
@@ -229,7 +230,7 @@ def addtrips():
         date = datetime.fromisoformat(date_string)
 
         trips = Trips(customer=customer, date=date,
-                      location=location, distance=distance, report=report, user_id=user_id)
+                      location=location, distance=distance, user_id=user_id)
         db.session.add(trips)
         db.session.commit()
         return redirect(url_for("calendar"))
@@ -279,6 +280,11 @@ def addusers():
         password = request.form.get("password")
         confirm_password = request.form.get("confirm-password")
         is_admin = request.form.get("is-admin")
+
+        if password != confirm_password:
+            flash("Password not match!!!")
+            return redirect(url_for("addusers"))
+
         user = User(firstname=firstname, lastname=lastname,
                     gmail=gmail, username=username, password=password, is_admin=is_admin)
         db.session.add(user)
@@ -304,6 +310,7 @@ def viewtrips(id):
         finish_latitude = request.form.get("finish-latitude")
         finish_longitude = request.form.get("finish-longitude")
         report = request.form.get("report")
+        print(report)
 
         # if has both start and finish location
         distance = getDistanceFromGoogle(
@@ -314,7 +321,8 @@ def viewtrips(id):
         trip.finish_latitude = finish_latitude
         trip.finish_longitude = finish_longitude
         trip.distance = distance
-        trip.report = report
+        trip.report = True if report == 'yes' else False
+
         db.session.add(trip)
         db.session.commit()
 
