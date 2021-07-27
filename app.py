@@ -11,10 +11,6 @@ from werkzeug import datastructures
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, current_user
 import requests
-from dotenv import load_dotenv
-
-load_dotenv()  # take environment variables from .env.
-
 
 app = Flask(__name__)
 
@@ -28,6 +24,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
 # uri = os.getenv("DATABASE_URL")  # or other relevant config var
 # if uri.startswith("postgres://"):
 #   uri = uri.replace("postgres://", "postgresql://", 1)
+# app.config['SQLALCHEMY_DATABASE_URI'] = uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
