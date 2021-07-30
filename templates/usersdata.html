@@ -25,7 +25,8 @@
                 <td>{{user.username}}</td>
                 <td>{{user.is_admin}}</td>
                 <td>
-                    <a class="btn btn-danger" href="{{ url_for('deleteUser', id=user.id) }}">Delete User</a>
+                    <a href="{{ url_for('deleteUser', id=user.id) }}" title="delete" class="btn btn-danger"
+                        onclick="return confirm('Are you sure you want to delete this User?')">Delete User</a>
                 </td>
             </tr>
             {% endfor %}
