@@ -1,31 +1,35 @@
 {% extends "base.html" %}
 {% block content%}
-<h1>Users Data</h1>
-<a href="/usersdata/add"><button class="btn btn-primary">Add User</button></a>
-<table class="table">
-    <thead class="table-light">
-        <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Firstname</th>
-            <th scope="col">Lastname</th>
-            <th scope="col">Gmail</th>
-            <th scope="col">Username</th>
-            <th scope="col">Delete</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for user in users %}
-        <tr>
-            <th scope="row">{{user.id}}</th>
-            <td>{{user.firstname}}</td>
-            <td>{{user.lastname}}</td>
-            <td>{{user.gmail}}</td>
-            <td>{{user.username}}</td>
-            <td>
-                <a class="btn btn-danger" href="{{ url_for('deleteUser', id=user.id) }}">Delete User</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container">
+    <h1>Users Data</h1>
+    <a href="/usersdata/add"><button class="btn btn-primary">Add User</button></a>
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Firstname</th>
+                <th scope="col">Lastname</th>
+                <th scope="col">Gmail</th>
+                <th scope="col">Username</th>
+                <th scope="col">Admin</th>
+                <th scope="col">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <th scope="row">{{user.id}}</th>
+                <td>{{user.firstname}}</td>
+                <td>{{user.lastname}}</td>
+                <td>{{user.gmail}}</td>
+                <td>{{user.username}}</td>
+                <td>{{user.is_admin}}</td>
+                <td>
+                    <a class="btn btn-danger" href="{{ url_for('deleteUser', id=user.id) }}">Delete User</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

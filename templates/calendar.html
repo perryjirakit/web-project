@@ -1,37 +1,46 @@
 {% extends "base.html" %}
 {% block content%}
-<h1>Calendar</h1>
+<div class="container">
+    <h1>Calendar</h1>
+    <div class="float-end">
+        <form action="{{url_for('calendar')}}" method="GET">
+            <input type="month" id="month" name="month" value="{{ month }}">
+            <input type="submit">
+        </form>
+    </div>
 
-<table class="table">
-    <thead class="table-light">
-        <tr>
-            <th scope="col">Customer</th>
-            <th scope="col">Date</th>
-            <th scope="col">Location</th>
-            <th scope="col">Distance</th>
-            <th scope="col">Report</th>
-            <th scope="col">User_IDs</th>
-            <th scope="col">Edit</th>
-            <th scope="col">Delete</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for trip in trips %}
-        <tr>
-            <th scope="row">{{trip.customer}}</th>
-            <td>{{trip.date}}</td>
-            <td>{{trip.location}}</td>
-            <td>{{'' if trip.distance is none else trip.distance/1000}}</td>
-            <td>{{trip.report}}</td>
-            <td>{{trip.user.firstname}}</td>
-            <td>
-                <a class="btn btn-primary" href="{{ url_for('viewtrips', id=trip.id) }}">Edit</a>
-            </td>
-            <td>
-                <a class="btn btn-danger" href="{{ url_for('deleteTrips', id=trip.id) }}">Delete Case</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Customer</th>
+                <th scope="col">Date & Time</th>
+                <th scope="col">Location</th>
+                <th scope="col">Distance</th>
+                <th scope="col">Report</th>
+                <th scope="col">User_IDs</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for trip in trips %}
+            <tr>
+                <th scope="row">{{trip.customer}}</th>
+                <td>{{trip.date}}</td>
+                <td>{{trip.location}}</td>
+                <td>{{'' if trip.distance is none else (trip.distance/1000)|round}}</td>
+                <td>{{trip.report}}</td>
+                <td>{{trip.user.firstname}}</td>
+                <td>
+                    <a class="btn btn-primary" href="{{ url_for('viewtrips', id=trip.id) }}">Edit</a>
+                </td>
+                <td>
+                    <a class="btn btn-danger" href="{{ url_for('deleteTrips', id=trip.id) }}">Delete Case</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {{total_price|round}}
+</div>
 {% endblock %}

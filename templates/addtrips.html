@@ -1,19 +1,24 @@
 {% extends "base.html" %}
 {% block content%}
-<form action="{{url_for('addtrips')}}" method="POST">
-    <div class="mb-3">
-        <label for="customer" class="form-label">Customer</label>
-        <input type="text" class="form-control" id="customer" name="customer">
-    </div>
-    <div class="mb-3">
-        <label for="date" class="form-label">Date</label>
-        <input type="datetime-local" class="form-control" id="date" name="date">
-    </div>
-    <div class="mb-3">
-        <label for="location" class="form-label">Location</label>
-        <input type="text" class="form-control" id="location" name="location">
-    </div>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<div class="container">
+    <h1>Add Trips</h1>
+
+    <form action="{{url_for('addtrips')}}" method="POST">
+        <div class="mb-3">
+            <label for="customer" class="form-label">Customer</label>
+            <input type="text" class="form-control" id="customer" name="customer">
+        </div>
+        <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="datetime-local" class="form-control" id="date" name="date">
+        </div>
+        <div class="mb-3">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" class="form-control" id="location" name="location">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
 {% endblock %}

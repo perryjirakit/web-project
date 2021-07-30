@@ -1,6 +1,6 @@
 from math import sin, cos, sqrt, atan2, radians
 import os
-from datetime import datetime
+from datetime import date, datetime
 from flask import Flask, render_template, request, redirect
 from flask.helpers import flash, url_for
 from flask_login.mixins import UserMixin
@@ -11,6 +11,7 @@ from werkzeug import datastructures
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, current_user
 import requests
+from sqlalchemy import extract
 
 app = Flask(__name__)
 
@@ -145,22 +146,27 @@ def index():
 @app.route("/home")
 @login_required
 def calendar():
+    month_year = request.args.get("month")
+    filter_date = date.today()
+    if month_year:
+        filter_date = datetime.strptime(month_year, '%Y-%m').date()
+
     trips = []
-    # if user is admin, show all trips
+    total_distance = 0
+    pricePerDistance = 5
     if current_user.is_admin:
-        trips = Trips.query.all()
-        # in each trip distance = trip.distanceBetweenTwoPoints()
-        # loop each trip in trips to sum all distance
-        # total distance
-        # total_distance = 0
-        # for trip in trips:
-        #     total_distance += trip.distanceBetweenTwoPoints()
-        # pricePerDistance = 50
-        # price = total_distance * pricePerDistance
+        trips = Trips.query.filter(
+            extract('year', Trips.date) == filter_date.year, extract('month', Trips.date) == filter_date.month)
+        for trip in trips:
+            if trip.distance is not None:
+                total_distance += trip.distance
     else:
         # else, show user's trips
         trips = Trips.query.filter_by(user_id=current_user.id)
-    return render_template("calendar.html", trips=trips)
+        for trip in trips:
+            if trip.distance is not None:
+                total_distance += trip.distance
+    return render_template("calendar.html", trips=trips, total_distance=total_distance, total_price=total_distance*pricePerDistance/1000, month=month_year)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -171,7 +177,7 @@ def login():
         password = request.form.get("password")
         user = User.query.filter_by(username=username).first()
         if not user or not check_password_hash(user.password, password):
-            flash("Incorrect credential")
+            flash("User Not Found or Incorrect Password")
             return redirect(url_for("login"))
         login_user(user)
         return redirect(url_for("calendar"))
@@ -195,6 +201,9 @@ def register():
         confirm_password = request.form.get("confirm-password")
 
         # TODO: check whether password == confirm_password
+        if password != confirm_password:
+            flash("Password not match!!!")
+            return redirect(url_for("addusers"))
 
         user = User(firstname=firstname, lastname=lastname,
                     gmail=gmail, username=username, password=password, is_admin=True)
@@ -325,18 +334,3 @@ def viewtrips(id):
 
         return redirect(url_for("calendar"))
     return render_template("viewtrips.html", trip=trip)
-
-
-@app.route("/admin")
-@login_required
-def admin():
-    users = User.query.all()
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        user = User.query.filter_by(username=username).first()
-        if not user or not check_password_hash(user.password, password):
-            return redirect(url_for("login"))
-        login_user(user)
-        return redirect(url_for("calendar"))
-    return render_template("admin.html", users=users)
