@@ -36,15 +36,23 @@ login_manager.login_view = "login"
 login_manager.init_app(app)
 
 
+def isFloat(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+
 def getDistanceFromGoogle(start_latitude, start_longitude, finish_latitude, finish_longitude):
     # return None if start and finish positions are None
-    if start_latitude is None:
+    if not isFloat(start_latitude):
         return None
-    if start_longitude is None:
+    if not isFloat(start_longitude):
         return None
-    if finish_latitude is None:
+    if not isFloat(finish_latitude):
         return None
-    if finish_longitude is None:
+    if not isFloat(finish_longitude):
         return None
 
     response = requests.get(
@@ -321,11 +329,14 @@ def viewtrips(id):
         # if has both start and finish location
         distance = getDistanceFromGoogle(
             start_latitude, start_longitude, finish_latitude, finish_longitude)
-
-        trip.start_latitude = start_latitude
-        trip.start_longitude = start_longitude
-        trip.finish_latitude = finish_latitude
-        trip.finish_longitude = finish_longitude
+        if isFloat(start_latitude):
+            trip.start_latitude = start_latitude
+        if isFloat(start_longitude):
+            trip.start_longitude = start_longitude
+        if isFloat(finish_latitude):
+            trip.finish_latitude = finish_latitude
+        if isFloat(finish_longitude):
+            trip.finish_longitude = finish_longitude
         trip.distance = distance
         trip.report = True if report == 'yes' else False
 

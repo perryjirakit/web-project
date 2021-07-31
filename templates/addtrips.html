@@ -7,15 +7,15 @@
     <form action="{{url_for('addtrips')}}" method="POST">
         <div class="mb-3">
             <label for="customer" class="form-label">Customer</label>
-            <input type="text" class="form-control" id="customer" name="customer">
+            <input required type="text" class="form-control" id="customer" name="customer">
         </div>
         <div class="mb-3">
             <label for="date" class="form-label">Date</label>
-            <input type="datetime-local" class="form-control" id="date" name="date">
+            <input required type="datetime-local" class="form-control" id="date" name="date">
         </div>
         <div class="mb-3">
             <label for="location" class="form-label">Location</label>
-            <input type="text" class="form-control" id="location" name="location">
+            <input required type="text" class="form-control" id="location" name="location">
         </div>
 
         <button type="submit" class="btn btn-primary">Submit</button>
